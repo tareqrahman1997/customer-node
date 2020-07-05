@@ -11,20 +11,20 @@ app.use(cors());
 
 const uri = "mongodb+srv://dbUser:cfA8zpU6FJsPTBbh@cluster0-ttxd5.mongodb.net/<dbname>?retryWrites=true&w=majority";
 
-//const client = new MongoClient(uri, { useNewUrlParser: true });
-// client.connect(err => {
-//   const collection = client.db("onlineStore").collection("customer");
-//   // perform actions on the collection object
-//   collection.insert({
-//     name:'tareq',
-//     price:254,
-//     stock:2
-//   },(ree, res) =>{
-//     console.log('successfully inserted')
-//   })
-//   console.log('Database connected...')
-//   client.close();
-//});
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+  const collection = client.db("onlineStore").collection("customer");
+  // perform actions on the collection object
+  collection.insert({
+    name:'sagor',
+    price:444,
+    stock:24
+  },(ree, res) =>{
+    console.log('successfully inserted')
+  })
+  console.log('Database connected...')
+  client.close();
+});
 
 app.get('/customerInfo',(req, res) =>{
   const client = new MongoClient(uri, { useNewUrlParser: true });
@@ -44,17 +44,16 @@ app.get('/customerInfo',(req, res) =>{
   });
 
 })
-
+//customerAdd.customerAddTime = new Date();
 //add customer information
 
-app.post('/addCustomerInfo', (req, res) => {
+app.post('/addCustomer', (req, res) => {
   const customerAdd = req.body;
-  customerAdd.customerAddTime = new Date();
-  let client = new MongoClient(uri, { useNewUrlParser: true , useUnifiedTopology: true});
+  const client = new MongoClient(uri, { useNewUrlParser: true });
 
   client.connect(err => {
       const collection = client.db("onlineStore").collection("customer");
-      collection.insert(customerAdd, (err, result)=>{
+      collection.insertOne(customerAdd, (err, result)=>{
           if(err){
               console.log(err)
               res.status(500).send({message:err});
@@ -64,7 +63,7 @@ app.post('/addCustomerInfo', (req, res) => {
               res.send(result.ops[0]);
           }
       });
-    //  client.close();
+       client.close();
     });
 });
 
