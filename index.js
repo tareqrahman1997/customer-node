@@ -1,30 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const MongoClient = require('mongodb').MongoClient;
+const bodyParser= require('body-parser')
 //require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
 
-//const uri = process.env.DB_PATH;
 
-const uri = "mongodb+srv://dbUser:cfA8zpU6FJsPTBbh@cluster0-ttxd5.mongodb.net/<dbname>?retryWrites=true&w=majority";
+const uri = "mongodb+srv://dbUser:cfA8zpU6FJsPTBbh@cluster0-ttxd5.mongodb.net/onlineStore?retryWrites=true&w=majority";
 
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  const collection = client.db("onlineStore").collection("customer");
-  // perform actions on the collection object
-  collection.insert({
-    name:'sagor',
-    price:444,
-    stock:24
-  },(ree, res) =>{
-    console.log('successfully inserted')
-  })
-  console.log('Database connected...')
-  client.close();
-});
 
 app.get('/customerInfo',(req, res) =>{
   const client = new MongoClient(uri, { useNewUrlParser: true });
@@ -44,23 +31,23 @@ app.get('/customerInfo',(req, res) =>{
   });
 
 })
-//customerAdd.customerAddTime = new Date();
+
 //add customer information
 
 app.post('/addCustomer', (req, res) => {
-  const customerAdd = req.body;
+  const customerDetails = req.body;
+  customerDetails.customerDetailsTime = new Date();
   const client = new MongoClient(uri, { useNewUrlParser: true });
 
   client.connect(err => {
       const collection = client.db("onlineStore").collection("customer");
-      collection.insertOne(customerAdd, (err, result)=>{
+      collection.insert(customerDetails, (err, documents)=>{
           if(err){
               console.log(err)
               res.status(500).send({message:err});
           }
           else{
-              console.log(result.ops[0]);
-              res.send(result.ops[0]);
+              res.send(documents.ops[0]);
           }
       });
        client.close();
